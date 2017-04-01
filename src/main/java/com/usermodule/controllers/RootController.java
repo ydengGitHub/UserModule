@@ -29,4 +29,5 @@ public class RootController {
 //		//mailSender.send(receiverEmail, "Hello, world", "Mail from Yan.");
 //		return "home";
 //	}	
+	
 }
