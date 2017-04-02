@@ -11,6 +11,8 @@
 <!-- Bootstrap -->
 <link href="/public/lib/bootstrap-3.3.7-dist/css/bootstrap.min.css"
 	rel="stylesheet">
+<!-- Our own css -->
+<link href="/public/css/styles.css" rel="stylesheet">
 </head>
 <body>
 	<div class="container">
