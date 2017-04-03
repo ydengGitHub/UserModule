@@ -15,22 +15,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.usermodule.dto.SignupForm;
 import com.usermodule.mail.MailSender;
+import com.usermodule.services.UserService;
+import com.usermodule.util.MyUtil;
 
 @Controller
 public class RootController {
 
 	private MailSender mailSender;
 	private static final Logger logger = LoggerFactory.getLogger(RootController.class);
+	private UserService userService;
 
 	@Value("${mail.receiver.email}")
 	private String receiverEmail;
 
 	@Autowired
-	public RootController(MailSender mailSender) {
+	public RootController(MailSender mailSender, UserService userService) {
 		this.mailSender = mailSender;
+		this.userService=userService;
 	}
 
 	// @RequestMapping("/")
@@ -52,9 +57,12 @@ public class RootController {
 	/* BindingResult will hold the error with input*/
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	public String signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, 
-			BindingResult result) {
+			BindingResult result, RedirectAttributes redirectAttributes) {
 		if(result.hasErrors()) return "signup";
-		logger.info(signupForm.toString());
+		//logger.info(signupForm.toString());
+		/*create a service layer, and call the layer to add entry to the database*/
+		userService.signup(signupForm);
+		MyUtil.flash(redirectAttributes, "success", "signupSuccess");
 		return "redirect:/"; // redirect to home page, with prefix "redirect:" ,
 								// considered as an url but not the name of a
 								// view
