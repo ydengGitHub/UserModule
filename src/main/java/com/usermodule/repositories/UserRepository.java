@@ -6,5 +6,7 @@ import com.usermodule.entities.User;
 
 /*Repository interface to let spring to create the repository to access the Database*/
 public interface UserRepository extends JpaRepository<User, Long> {
+	/*Spring will try to implement it by itself*/
+	User findByEmail(String email);
 	
 }

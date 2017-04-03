@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,7 @@ import com.usermodule.dto.SignupForm;
 import com.usermodule.mail.MailSender;
 import com.usermodule.services.UserService;
 import com.usermodule.util.MyUtil;
+import com.usermodule.validators.SignupFormValidator;
 
 @Controller
 public class RootController {
@@ -28,14 +31,24 @@ public class RootController {
 	private MailSender mailSender;
 	private static final Logger logger = LoggerFactory.getLogger(RootController.class);
 	private UserService userService;
+	private SignupFormValidator signupFormValidator;
 
 	@Value("${mail.receiver.email}")
 	private String receiverEmail;
 
 	@Autowired
-	public RootController(MailSender mailSender, UserService userService) {
+	public RootController(MailSender mailSender, UserService userService,
+			 SignupFormValidator signupFormValidator) {
 		this.mailSender = mailSender;
 		this.userService=userService;
+		this.signupFormValidator=signupFormValidator;
+	}
+	
+	/*Tell spring to use signupFormValidator to verify the signupForm
+	 * signupForm here match the @ModelAttribute("signupForm") in signup() method*/
+	@InitBinder("signupForm")
+	protected void initSignupBinder(WebDataBinder binder){
+		binder.setValidator(signupFormValidator);
 	}
 
 	// @RequestMapping("/")

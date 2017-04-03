@@ -5,11 +5,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
+
+/*change the table to usr instead of user, because user is MySQL keyword
+ *create a index with "email", and set it as unique*/
+
 @Entity
-@Table(name="usr")
-/*change the table to usr instead of user, because user is MySQL keyword*/
+@Table(name="usr", indexes = {
+		@Index(columnList = "email", unique=true)
+})
 public class User {
 	public static final int EMAIL_MAX=250;
 	public static final int NAME_MAX=50;
