@@ -88,7 +88,15 @@
 	    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>
-
+	
+	<sec:authorize access="hasRole('ROLE_UNVERIFIED')">
+		<div class="alert alert-warning alert-dismissable">
+		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  Your email id is unverified. <a href="/users/resend-verification-mail">Click here</a> to get the verification mail again.
+		</div>
+    </sec:authorize>
+	
+	
 	<c:if test="${not empty flashMessage}">
 		<div class="alert alert-${flashKind} alert-dismissable">
 		  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>

@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.usermodule.entities.User;
+import com.usermodule.entities.User.Role;
 
 public class UserDetailsImpl implements UserDetails {
 	
@@ -21,11 +22,17 @@ public class UserDetailsImpl implements UserDetails {
 		this.user=user;
 	}
 
-	/*Matched rows, assume each user only have one row here*/
+	/*Matched rows, return all the roles the user having*/
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(1);
+		Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(
+				user.getRoles().size() + 1);
+
+		for (Role role : user.getRoles())
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+
 		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
 		return authorities;
 	}
 
