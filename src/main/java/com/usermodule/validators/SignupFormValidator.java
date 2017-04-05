@@ -1,6 +1,7 @@
 package com.usermodule.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -10,6 +11,7 @@ import com.usermodule.entities.User;
 import com.usermodule.repositories.UserRepository;
 
 @Component
+@Primary
 public class SignupFormValidator extends LocalValidatorFactoryBean{
 	private UserRepository userRepository;
 	

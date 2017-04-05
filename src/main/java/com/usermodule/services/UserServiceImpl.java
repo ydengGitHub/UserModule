@@ -16,7 +16,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.validation.BindingResult;
 
+import com.usermodule.dto.ForgotPasswordForm;
+import com.usermodule.dto.ResetPasswordForm;
 import com.usermodule.dto.SignupForm;
 import com.usermodule.dto.UserDetailsImpl;
 import com.usermodule.entities.User;
@@ -54,7 +57,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		user.setPassword(passwordEncoder.encode(signupForm.getPassword()));
 		user.getRoles().add(Role.UNVERIFIED);
 		//Apache RandomStringUtils class, need to include by adding to pom.xml
-		user.setVerificationCode(RandomStringUtils.randomAlphanumeric(16));
+		user.setVerificationCode(RandomStringUtils.randomAlphanumeric(User.RANDOM_CODE_LENGTH));
 		userRepository.save(user);
 		//int j=20/0; //if met error, the user will not be added to database
 		/*Deal with the situation: user get email, but error occur and roll back.
@@ -94,5 +97,56 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		user.getRoles().remove(Role.UNVERIFIED);
 		user.setVerificationCode(null);
 		userRepository.save(user);//update the database
+	}
+
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
+	public void forgotPassword(ForgotPasswordForm form) {
+		final User user=userRepository.findByEmail(form.getEmail());
+		String forgotPasswordCode=RandomStringUtils.randomAlphanumeric(User.RANDOM_CODE_LENGTH);
+		User existUser=userRepository.findByForgotPasswordCode(forgotPasswordCode);
+		while(existUser!=null){
+			forgotPasswordCode=RandomStringUtils.randomAlphanumeric(User.RANDOM_CODE_LENGTH);
+			existUser=userRepository.findByForgotPasswordCode(forgotPasswordCode);
+		}
+		user.setForgotPasswordCode(forgotPasswordCode);
+		final User savedUser=userRepository.save(user);
+		
+		TransactionSynchronizationManager.registerSynchronization(
+				new TransactionSynchronizationAdapter(){
+					@Override
+					public void afterCommit(){
+						try{
+							mailForgotPasswordLink(savedUser);
+						}catch (MessagingException e){
+							logger.error(ExceptionUtils.getStackTrace(e));
+						}
+					}
+				});	
+	}
+	
+	private void mailForgotPasswordLink(User user) throws MessagingException{
+		String forgotPasswordLink = 
+				MyUtil.hostUrl() + "/reset-password/" +
+				user.getForgotPasswordCode();
+		mailSender.send(user.getEmail(),
+				MyUtil.getMessage("forgotPasswordSubject"),
+				MyUtil.getMessage("forgotPasswordEmail", forgotPasswordLink));
+	}
+
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
+	public void resetPassword(String forgotPasswordCode,
+			ResetPasswordForm resetPasswordForm,
+			BindingResult result) {
+		
+		User user = userRepository.findByForgotPasswordCode(forgotPasswordCode);
+		if (user == null) result.reject("invalidForgotPassword");
+		
+		if (result.hasErrors()) return;
+		
+		user.setForgotPasswordCode(null);
+		user.setPassword(passwordEncoder.encode(resetPasswordForm.getPassword().trim()));
+		userRepository.save(user);
 	}
 }

@@ -8,4 +8,5 @@ import com.usermodule.entities.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	/*Spring will try to implement it by itself*/
 	User findByEmail(String email);
+	User findByForgotPasswordCode(String forgotPasswordCode);
 }

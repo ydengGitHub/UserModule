@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 						"/signup",
 						"/forgot-password",
 						"/reset-password/*",
+						"/verify/*",
 						"/public/**").permitAll()
 				.anyRequest().authenticated();
 		http
