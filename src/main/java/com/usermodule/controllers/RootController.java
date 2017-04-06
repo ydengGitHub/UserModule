@@ -71,11 +71,6 @@ public class RootController {
 		binder.setValidator(resetPasswordFormValidator);
 	}
 	
-	// @RequestMapping("/")
-	// public String home() throws MessagingException{
-	// //mailSender.send(receiverEmail, "Hello, world", "Mail from Yan.");
-	// return "home";
-	// }
 	/* For Get method only */
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
 	public String signup(Model model) {
@@ -101,7 +96,7 @@ public class RootController {
 								// view
 	}
 	
-	
+	/*Forgot Password requests*/
 	@RequestMapping(value = "/forgot-password", method = RequestMethod.GET)
 	public String forgotPassword(Model model) {
 		model.addAttribute(new ForgotPasswordForm()); // same as Above, signupForm will
@@ -124,7 +119,7 @@ public class RootController {
 	}
 	
     /**
-     * Reset password
+     * Reset password request
      */
     @RequestMapping(value = "/reset-password/{forgotPasswordCode}", method = RequestMethod.GET)
     public String resetPassword(@PathVariable("forgotPasswordCode") String forgotPasswordCode, Model model) {

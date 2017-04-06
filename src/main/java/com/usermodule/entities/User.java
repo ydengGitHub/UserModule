@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
+import com.usermodule.util.MyUtil;
+
 
 /*change the table to usr instead of user, because user is MySQL keyword
  *create a index with "email", and set it as unique*/
@@ -20,7 +22,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="usr", indexes = {
 		@Index(columnList = "email", unique=true),
-		@Index(columnList = "forgotPasswordCode", unique=true)
+		@Index(columnList = "forgotPasswordCode", unique=true),
+		@Index(columnList = "changeEmailCode", unique=true)
 })
 public class User {
 	public static final int EMAIL_MAX=250;
@@ -30,7 +33,7 @@ public class User {
 	public static final int PASSWORD_MAX = 20;
 	
 	public static enum Role{
-		UNVERIFIED, BLOCKED, ADMIN
+		UNVERIFIED, BLOCKED, ADMIN, CHANGINGEMAIL
 	}
 	
 	@Id
@@ -54,6 +57,28 @@ public class User {
 	@Column(length=RANDOM_CODE_LENGTH)
 	private String forgotPasswordCode;
 	
+	@Column(length=RANDOM_CODE_LENGTH)
+	private String changeEmailCode;
+	
+	@Column(length = EMAIL_MAX)
+	private String newEmail;
+	
+	public String getNewEmail() {
+		return newEmail;
+	}
+
+	public void setNewEmail(String newEmail) {
+		this.newEmail = newEmail;
+	}
+
+	public String getChangeEmailCode() {
+		return changeEmailCode;
+	}
+
+	public void setChangeEmailCode(String changeEmailCode) {
+		this.changeEmailCode = changeEmailCode;
+	}
+
 	public String getVerificationCode() {
 		return verificationCode;
 	}
@@ -114,5 +139,16 @@ public class User {
 	
 	public String getForgotPasswordCode(){
 		return forgotPasswordCode;
+	}
+
+	public boolean isAdmin() {
+		return roles.contains(Role.ADMIN);
+	}
+	
+	public boolean isEditable(){
+		User loggedIn=MyUtil.getSessionUser();
+		if(loggedIn==null) return false;
+		return loggedIn.isAdmin()||			//Is admin or
+				loggedIn.getId()==id;		//self can edit
 	}
 }

@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.usermodule.dto.UserDetailsImpl;
 import com.usermodule.entities.User;
+import com.usermodule.repositories.UserRepository;
 import com.usermodule.services.UserServiceImpl;
 
 /*Include utility methods will be called from different place*/
@@ -84,5 +86,4 @@ public class MyUtil {
 		}
 		return null;
 	}
-		
 }

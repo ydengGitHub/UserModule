@@ -25,13 +25,13 @@ public class MailConfig {
 	private String password;
 
 	@Bean
-	@Profile("dev")
+	@Profile("test")
 	public MailSender mockMailSender(){
 		return new MockMailSender();
 	}
 	
 	@Bean
-	@Profile("!dev")
+	@Profile("dev")
 	public MailSender smtpMailSender(){
 		SmtpMailSender mailSender=new SmtpMailSender();
 		mailSender.setJavaMailSender(javaMailSender()); //always get the same instance
