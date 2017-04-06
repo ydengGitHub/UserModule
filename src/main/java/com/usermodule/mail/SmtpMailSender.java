@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 
 public class SmtpMailSender implements MailSender {
 	private static final Logger logger=LoggerFactory.getLogger(MockMailSender.class);
@@ -18,6 +19,7 @@ public class SmtpMailSender implements MailSender {
 	}
 	
 	@Override
+	@Async
 	public void send(String to, String subject, String body) throws MessagingException{
 		MimeMessage message=javaMailSender.createMimeMessage();
 		MimeMessageHelper helper;
